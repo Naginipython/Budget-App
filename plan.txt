@@ -1,0 +1,12 @@
+Add money
+- Choose between many envelopes
+- saves data in database
+
+
+
+
+
+
+----------------
+data structures:
+https://dbdiagram.io/d/6872fc0bf413ba35089420f3
