@@ -3,7 +3,6 @@ import { Envelope } from "../../assets/interfaces";
 import { useNavigate } from "react-router-dom";
 import { CSS } from '@dnd-kit/utilities';
 import { Grid, Typography } from "@mui/material";
-import { BorderTop } from "@mui/icons-material";
 
 export default function SortableItem({ data }: { data: Envelope }) {
     const navigate = useNavigate();

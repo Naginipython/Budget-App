@@ -4,6 +4,7 @@ import { ChangeEventHandler, useState } from "react";
 import { Box, MenuItem, TextField } from "@mui/material";
 import { Envelope } from "../../../assets/interfaces";
 import Database from "@tauri-apps/plugin-sql";
+import { useNavigate } from "react-router-dom";
 
 
 export default function () {
@@ -14,8 +15,9 @@ export default function () {
     const [limitError, setLimitError] = useState<boolean>(false);
     const [limitErrorMsg, setLimitErrorMsg] = useState<string>("");
 
-    const [type, setType] = useState<string>("$");
+    // const [type, setType] = useState<string>("$");
     const [period, setPeriod] = useState<string>("Biweekly");
+    const navigate = useNavigate();
 
     const handleLimit: ChangeEventHandler<HTMLInputElement> = (e) => {
         const value = e.currentTarget.value;
@@ -66,8 +68,14 @@ export default function () {
         //     "DROP TABLE IF EXISTS envelopes"
         // );
         await db.execute(
-            "CREATE TABLE IF NOT EXISTS envelopes (id INTEGER PRIMARY KEY AUTOINCREMENT, title VARCHAR(255), balance REAL, balance_limit REAL, period VARCHAR(255), created_at TIMESTAMP)"
+            "CREATE TABLE IF NOT EXISTS envelopes (id INTEGER PRIMARY KEY AUTOINCREMENT, title VARCHAR(255), balance REAL, balance_limit REAL, period VARCHAR(255), ordering INTEGER, created_at TIMESTAMP)"
         );
+        // TODO: Check if title exists
+        const existingEnvelope: Envelope[] = await db.select("SELECT * FROM envelopes WHERE title = ?", [envelope.title]);
+        if (existingEnvelope.length > 0) {
+            setNameError(true);
+            return;
+        }
         const result = await db.execute(
             "INSERT INTO envelopes (title, balance, balance_limit, period, created_at) VALUES (?, ?, ?, ?, ?)",
             [envelope.title, envelope.balance, envelope.balance_limit, envelope.period, envelope.created_at]
@@ -75,6 +83,8 @@ export default function () {
         debug(JSON.stringify(result));
         envelope.id = result.lastInsertId? result.lastInsertId : -1;
         debug(JSON.stringify(envelope));
+        // You can use navigate(-1) to go back one step in the history stack
+        navigate(-1);
     };
 
     return (
@@ -105,7 +115,7 @@ export default function () {
             <Box
                 sx={{ display: "flex", justifyContent: "center", margin: "0px 2vw" }}
             >
-                <TextField
+                {/* <TextField
                     sx={{ margin: "20px" }}
                     select
                     label="Type"
@@ -114,7 +124,7 @@ export default function () {
                 >
                     <MenuItem value={"$"}>$</MenuItem>
                     <MenuItem value={"₿"}>₿</MenuItem>
-                </TextField>
+                </TextField> */}
                 <TextField
                     sx={{ margin: "20px" }}
                     select

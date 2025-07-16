@@ -13,6 +13,7 @@ export interface Envelope {
     balance_limit: number;
     period: string; // e.g., "Biweekly", "Monthly"
     created_at: string; // ISO date string
+    ordering: number;
     transactions?: Transaction[]; // Optional, if you want to include transactions in the envelope
 };
 

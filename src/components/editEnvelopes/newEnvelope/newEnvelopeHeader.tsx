@@ -1,11 +1,13 @@
 import { ArrowBack, Check } from "@mui/icons-material";
 import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 interface NewEnvelopeHeaderProps {
     onSave: () => void;
 }
 
 export default function ({ onSave }: NewEnvelopeHeaderProps) {
+    const navigate = useNavigate();
     return (
         <AppBar position="static" sx={{ backgroundColor: "green" }}>
             <Toolbar disableGutters={true} sx={{ paddingLeft: "10px", paddingRight: "10px" }}>
@@ -14,7 +16,7 @@ export default function ({ onSave }: NewEnvelopeHeaderProps) {
                     edge="start"
                     color="inherit"
                     aria-label="back"
-                    onClick={() => window.history.back()}
+                    onClick={() => navigate(-1)}
                 >
                     <ArrowBack sx={{ fontSize: 30 }} />
                 </IconButton>

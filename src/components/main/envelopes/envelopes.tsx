@@ -1,20 +1,26 @@
 import { Box, Typography } from '@mui/material';
-import Envelope from './envelope';
+import EnvelopeElm from './envelope';
 import { useEffect, useState } from 'react';
+import Database from '@tauri-apps/plugin-sql';
+import { debug } from '@tauri-apps/plugin-log';
+import { Envelope } from '../../../assets/interfaces';
 
 export default function () {
     const [data, setData] = useState<any>([]);
     const [total, setTotal] = useState<number>(0);
     useEffect(() => {
-        setData([
-            { name: 'Groceries', balance: 25, limit: 50 },
-            { name: 'Gas', balance: 25, limit: 50 },
-            { name: 'Entertainment', balance: 25, limit: 50 },
-            { name: 'Rent', balance: 25, limit: 50 },
-            { name: 'Utilities', balance: 25, limit: 50 },
-            { name: 'Misc', balance: 25, limit: 50 },
-        ]);
+        // TODO: Only fetch data once, otherwise use store
+        const fetchData = async () => {
+            const db = await Database.load("sqlite:budget.db");
+            const result: Envelope[] = await db.select("SELECT * FROM envelopes ORDER BY ordering");
+            result.sort((a, b) => a.ordering - b.ordering);
+            console.log("Fetched Envelopes: ", result);
+            setData(result);
+            debug("Fetched Data: " + JSON.stringify(result));
+        }
+        fetchData();
     }, []);
+
     useEffect(() => {
         setTotal(data.reduce((acc: number, item: any) => acc + item.balance, 0));
     }, [data]);
@@ -38,7 +44,7 @@ export default function () {
                 </Typography>
             </Box>
             {data.map((data: any, index: number) => (
-                <Envelope key={index} data={data} />
+                <EnvelopeElm key={index} data={data} />
             ))}
         </>
     );
